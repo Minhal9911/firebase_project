@@ -40,8 +40,14 @@ class _EntryScreenState extends State<EntryScreen> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -260,7 +266,10 @@ class _EntryScreenState extends State<EntryScreen> {
 
   Widget showElevatedButton() {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       height: 50,
       margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
       decoration: BoxDecoration(
@@ -269,37 +278,39 @@ class _EntryScreenState extends State<EntryScreen> {
       child: ElevatedButton(
         onPressed: !isLoading
             ? () async {
-                String name = _nameController.text.trim();
-                String email = _emailController.text.trim();
-                String age = _ageController.text.trim();
+          String name = _nameController.text.trim();
+          String email = _emailController.text.trim();
+          String age = _ageController.text.trim();
 
-                if (name.isEmpty) {
-                  showSnackbarMsg(context, "Please fill the name");
-                } else if (email.isEmpty) {
-                  showSnackbarMsg(context, "Please fill the email");
-                } else if (age.isEmpty) {
-                  showSnackbarMsg(context, 'Please fill the age');
-                } else if (profilePic == null) {
-                  showSnackbarMsg(context, 'Please select the Image');
-                } else {
-                  setState(() {
-                    isLoading = true;
-                  });
-                }
-                log('Loading');
-                await saveUser()
-                    .then((value) => Navigator.of(context)
-                        .popUntil((route) => route.isFirst))
-                    .then((value) => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => const ListScreen())));
-                setState(() {
-                  isLoading = false;
-                });
-                _nameController.clear();
-                _emailController.clear();
-                _ageController.clear();
-              }
+          if (name.isEmpty) {
+            showSnackbarMsg(context, "Please fill the name");
+          } else if (email.isEmpty) {
+            showSnackbarMsg(context, "Please fill the email");
+          } else if (age.isEmpty) {
+            showSnackbarMsg(context, 'Please fill the age');
+          } else if (profilePic == null) {
+            showSnackbarMsg(context, 'Please select the Image');
+          } else {
+            setState(() {
+              isLoading = true;
+            });
+          }
+          log('Loading');
+          await saveUser()
+              .then((value) =>
+              Navigator.of(context)
+                  .popUntil((route) => route.isFirst))
+              .then((value) =>
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                      builder: (context) => const ListScreen())));
+          setState(() {
+            isLoading = false;
+          });
+          _nameController.clear();
+          _emailController.clear();
+          _ageController.clear();
+        }
             : null,
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(Colors.white),
@@ -311,30 +322,30 @@ class _EntryScreenState extends State<EntryScreen> {
         ),
         child: isLoading
             ? SizedBox(
-                height: 50,
-                width: 50,
-                child: ValueListenableBuilder<double>(
-                    valueListenable: progressNotifier,
-                    builder: (context, value, child) {
-                      return CircularPercentIndicator(
-                        radius: 24,
-                        lineWidth: 4,
-                        percent: value * 0.01,
-                        animation: true,
-                        // animationDuration: 1000,
-                        center: Text("${value.toInt()}%",
-                            style: const TextStyle(color: Colors.purple)),
-                        progressColor: Colors.purple,
-                      );
-                    }),
-              )
+          height: 50,
+          width: 50,
+          child: ValueListenableBuilder<double>(
+              valueListenable: progressNotifier,
+              builder: (context, value, child) {
+                return CircularPercentIndicator(
+                  radius: 24,
+                  lineWidth: 4,
+                  percent: value * 0.01,
+                  animation: true,
+                  // animationDuration: 1000,
+                  center: Text("${value.toInt()}%",
+                      style: const TextStyle(color: Colors.purple)),
+                  progressColor: Colors.purple,
+                );
+              }),
+        )
             : const Text(
-                "Save",
-                style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
-              ),
+          "Save",
+          style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: 20),
+        ),
       ),
     );
   }
@@ -355,7 +366,7 @@ class _EntryScreenState extends State<EntryScreen> {
         .child(const Uuid().v1())
         .putFile(profilePic!);
     StreamSubscription taskSubscription =
-        uploadTask.snapshotEvents.listen((snapshot) {
+    uploadTask.snapshotEvents.listen((snapshot) {
       double percentage = snapshot.bytesTransferred / snapshot.totalBytes * 100;
       progressNotifier.value = percentage;
       log(percentage.toString());
@@ -375,7 +386,7 @@ class _EntryScreenState extends State<EntryScreen> {
     };
     try {
       CollectionReference userInfo =
-          FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('users');
       userInfo
           .doc(uuid)
           .set(userData)
@@ -387,41 +398,45 @@ class _EntryScreenState extends State<EntryScreen> {
   }
 
   Future<void> imagePickOption(ImageSource imagePicker) async {
-    XFile? selectedImage = await _picker.pickImage(source: imagePicker);
-    if (selectedImage != null) {
-      // File convertedFile = File(selectedImage.path);
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: selectedImage.path,
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ],
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.purple,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-            statusBarColor: Colors.purple,
-            backgroundColor: Colors.purple.shade300,
-            activeControlsWidgetColor: Colors.purple,
-            showCropGrid: false,
-          ),
-        ],
-      );
-      if (croppedFile != null) {
-        File convertFile = File(croppedFile.path);
-        setState(() {
-          profilePic = convertFile;
-        });
+    try {
+      XFile? selectedImage = await _picker.pickImage(source: imagePicker);
+      if (selectedImage != null) {
+        // File convertedFile = File(selectedImage.path);
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: selectedImage.path,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Crop Image',
+              toolbarColor: Colors.purple,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false,
+              statusBarColor: Colors.purple,
+              backgroundColor: Colors.purple.shade300,
+              activeControlsWidgetColor: Colors.purple,
+              showCropGrid: false,
+            ),
+          ],
+        );
+        if (croppedFile != null) {
+          File convertFile = File(croppedFile.path);
+          setState(() {
+            profilePic = convertFile;
+          });
+        }
+        log('Image Selected');
+      } else {
+        log('No image selected');
       }
-      log('Image Selected');
-    } else {
-      log('No image selected');
+    } catch (e) {
+      debugPrint("error:${e.toString()}");
     }
   }
 }

@@ -2,13 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:authentication/phone/signin_with_phone.dart';
 import 'package:authentication/project_screens/entry_screen.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -65,13 +62,9 @@ class _ListScreenState extends State<ListScreen> {
       .orderBy('age', descending: true)
       .snapshots();*/ // we can use where and orderBy both same time.
 
-  // final LocalNotificationService localNotification = LocalNotificationService();
 
   @override
   void initState() {
-    getInitialMessage(); // This method call when app in terminated state and you get a notification
-    getOnMessaging(); // This method only call when app in foreground it mean app must be opened
-    getOnMessageOpenedApp(); // This method only call when app in background and not terminated(not closed)
     super.initState();
   }
 
@@ -125,17 +118,23 @@ class _ListScreenState extends State<ListScreen> {
           return Future.value(result);
         },
         child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                Colors.pink.shade400,
-                Colors.purple,
-                Colors.blue.shade600,
-              ])),
+                    Colors.pink.shade400,
+                    Colors.purple,
+                    Colors.blue.shade600,
+                  ])),
           child: StreamBuilder<QuerySnapshot>(
             stream: _userStream,
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -147,8 +146,8 @@ class _ListScreenState extends State<ListScreen> {
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
                           Map<String, dynamic> userMap =
-                              snapshot.data.docs[index].data()
-                                  as Map<String, dynamic>;
+                          snapshot.data.docs[index].data()
+                          as Map<String, dynamic>;
                           return Card(
                             color: Colors.transparent,
                             elevation: 0,
@@ -290,7 +289,7 @@ class _ListScreenState extends State<ListScreen> {
                           return const Icon(Icons.error);
                         },
                       )
-                      /*: ValueListenableBuilder<double>(
+                    /*: ValueListenableBuilder<double>(
                             valueListenable: progressNotifier,
                             builder: (context, value, child) {
                               return CircularPercentIndicator(
@@ -316,7 +315,7 @@ class _ListScreenState extends State<ListScreen> {
                                 progressColor: Colors.purple,
                               );
                             }),*/
-                      ),
+                  ),
                 ),
                 Container(
                   height: 40,
@@ -333,7 +332,7 @@ class _ListScreenState extends State<ListScreen> {
                             Colors.purple,
                             Colors.blue.shade600,
                           ])),
-                  child: Row(
+                  /*child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       IconButton(
@@ -353,7 +352,7 @@ class _ListScreenState extends State<ListScreen> {
                             color: Colors.white,
                           )),
                     ],
-                  ),
+                  ),*/
                 ),
               ],
             ),
@@ -361,8 +360,8 @@ class _ListScreenState extends State<ListScreen> {
         });
   }
 
-  Widget showTrailingOptions(
-      BuildContext context, Map<String, dynamic> userMap) {
+  Widget showTrailingOptions(BuildContext context,
+      Map<String, dynamic> userMap) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -376,7 +375,7 @@ class _ListScreenState extends State<ListScreen> {
           onPressed: () {
             try {
               CollectionReference userInfo =
-                  FirebaseFirestore.instance.collection('users');
+              FirebaseFirestore.instance.collection('users');
               userInfo
                   .doc(userMap['id'])
                   .delete()
@@ -443,7 +442,7 @@ class _ListScreenState extends State<ListScreen> {
                             },
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all(Colors.purple),
+                              MaterialStateProperty.all(Colors.purple),
                               shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
@@ -460,37 +459,37 @@ class _ListScreenState extends State<ListScreen> {
                         child: ElevatedButton(
                           onPressed: !isLoading
                               ? () async {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
+                            setState(() {
+                              isLoading = true;
+                            });
 
-                                  await updateDialog(userMap).then(
-                                      (value) => Navigator.of(context).pop());
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
+                            await updateDialog(userMap).then(
+                                    (value) => Navigator.of(context).pop());
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
                               : null,
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.purple),
+                            MaterialStateProperty.all(Colors.purple),
                             shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20))),
                           ),
                           child: isLoading
                               ? const SizedBox(
-                                  height: 36,
-                                  width: 36,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                  ),
-                                )
+                            height: 36,
+                            width: 36,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
                               : const Text(
-                                  'Submit',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                            'Submit',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -653,7 +652,7 @@ class _ListScreenState extends State<ListScreen> {
 
     try {
       CollectionReference userInfo =
-          FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('users');
       userInfo.doc(uuid).update(userData);
       debugPrint("The value is saved");
     } catch (e) {
@@ -671,7 +670,7 @@ class _ListScreenState extends State<ListScreen> {
         .putFile(profilePic!);
 
     StreamSubscription taskSubscription =
-        uploadTask.snapshotEvents.listen((snapshot) {
+    uploadTask.snapshotEvents.listen((snapshot) {
       double percentage = snapshot.bytesTransferred / snapshot.totalBytes * 100;
       progressNotifier.value = percentage;
       log(percentage.toString());
@@ -686,7 +685,7 @@ class _ListScreenState extends State<ListScreen> {
     };
     try {
       CollectionReference userInfo =
-          FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('users');
       userInfo.doc(uuid).update(userData);
       debugPrint("The value is saved");
     } catch (e) {
@@ -738,102 +737,8 @@ class _ListScreenState extends State<ListScreen> {
         .signOut()
         .then(
             (value) => Navigator.of(context).popUntil((route) => route.isFirst))
-        .then((value) => Navigator.of(context).pushReplacement(
+        .then((value) =>
+        Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const SignInScreen())));
-  }
-
-  Future<void> getInitialMessage() async {
-    RemoteMessage? message =
-        await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      if (message.data["page"] == "email") {
-        if (!mounted) return;
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const SignInScreen()));
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      } else if (message.data["page"] == "phone") {
-        if (!mounted) return;
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const PhoneSignIn()));
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Invalid Page"),
-          duration: Duration(seconds: 10),
-          backgroundColor: Colors.red,
-        ));
-      }
-    }
-  }
-
-  void getOnMessaging() {
-    bool isOpen = false;
-    FirebaseMessaging.onMessage.listen((msg) async {
-      debugPrint('msg received');
-      debugPrint(msg.notification!.body);
-
-      String timezone = AwesomeNotifications.localTimeZoneIdentifier;
-      AwesomeNotifications().createNotification(
-        content: NotificationContent(
-          id: 1,
-          channelKey: 'key1',
-          title: 'This is Notification Title',
-          body: 'This is Firebase body..',
-          notificationLayout: NotificationLayout.BigPicture,
-          bigPicture: 'assets/loginlogo.png',
-        ),
-        schedule: NotificationInterval(
-            interval: 5, timeZone: timezone, repeats: true),
-      );
-      /*  if (!isOpen) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("Notification"),
-                content: Text(msg.notification!.body!),
-                actions: [
-                  TextButton(
-                    child: const Text("Ok"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              );
-            });
-      } else {
-        setState(() {
-          isOpen = false;
-        });
-      }*/
-    });
-  }
-
-  void getOnMessageOpenedApp() {
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(6),
-          padding: const EdgeInsets.all(10),
-          content: const Text(
-            "App is Open By Notification",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          duration: const Duration(seconds: 3),
-          backgroundColor: Colors.purple,
-          shape: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                width: 0,
-                color: Colors.purple,
-                // style: BorderStyle.solid,
-              )),
-        ),
-      );
-    });
   }
 }
